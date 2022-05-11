@@ -1,0 +1,32 @@
+version: '3.9'
+
+networks:
+  app_network:
+
+services:
+  db:
+    build: db
+    ports:
+      - '5432:5432'
+    networks:
+      app_network:
+        aliases:
+          - db_main
+
+  app:
+    build:
+      context: .
+      args:
+        PG_DSN: 'postgresql://admin:1234@db_main:5432/flask_netology'
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      app_network:
+        aliases:
+          - flask_api
+    restart:
+      always
+    volumes:
+      - ./:/app
